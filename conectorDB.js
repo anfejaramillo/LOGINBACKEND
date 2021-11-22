@@ -5,11 +5,8 @@ let dbConfig = require("./dbConfig");
 async function testConnection() {
   try {
     let connection = await mongoDB.connect(dbConfig.connectionString);
-    if ((await connection.db(dbConfig.dbName).collections()).length > 0) {
-      return true;
-    } else {
-      return false;
-    }
+    let collections = connection.db(dbConfig.dbName).collections();
+    return collections.length > 0;
   } catch (ex) {
     return false;
   }
@@ -19,7 +16,8 @@ async function consultarDatos(collectionName, filtro) {
   try {
     let connection = await mongoDB.connect(dbConfig.connectionString);
     let db = connection.db(dbConfig.dbName);
-    let cursor = db.collection(collectionName).find(filtro);
+    let collection = db.collection(collectionName);
+    let cursor = collection.find(filtro)
     let arrayOutPut = [];
     let currentDocument = await cursor.next();
     while (currentDocument) {
